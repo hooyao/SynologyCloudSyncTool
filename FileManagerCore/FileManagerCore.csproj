@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.52"/>
+    <Import Project="..\deepclean.target"/>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <RootNamespace>com.hy.synology.filemanager.core</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BouncyCastle.NetCore"/>
+        <PackageReference Include="K4os.Compression.LZ4.Streams"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Connector\Connector.csproj"/>
+    </ItemGroup>
+</Project>

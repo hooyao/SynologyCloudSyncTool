@@ -1,0 +1,9 @@
+﻿<Project>
+    <Target Name="SpicNSpan"
+            AfterTargets="Clean"> <!-- common vars https://msdn.microsoft.com/en-us/library/c02as0cs.aspx?f=255&MSPPError=-2147217396 -->
+        <!-- Remove obj folder -->
+        <RemoveDir Directories="$(BaseIntermediateOutputPath)"/>
+        <!-- Remove bin folder -->
+        <RemoveDir Directories="$(BaseOutputPath)"/>
+    </Target>
+</Project>
