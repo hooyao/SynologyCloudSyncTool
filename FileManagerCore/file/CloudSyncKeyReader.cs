@@ -1,16 +1,25 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 
 namespace com.hy.synology.filemanager.core.file
 {
-    public class CloudSyncKeyReader
+    public class CloudSyncKey
     {
+        private readonly Lazy<AsymmetricCipherKeyPair> _lazyKeyPair;
+
+        public AsymmetricCipherKeyPair KeyPair => this._lazyKeyPair.Value;
+
         //TODO refactor to decouple bouncy castle @HUYAO
-        public AsymmetricCipherKeyPair GetKeyPair(string filePath)
+        public CloudSyncKey(string keyFilePath)
+        {
+            this._lazyKeyPair = new Lazy<AsymmetricCipherKeyPair>(GetKeyPair(keyFilePath));
+        }
+        private AsymmetricCipherKeyPair GetKeyPair(string filePath)
         {
             try
             {

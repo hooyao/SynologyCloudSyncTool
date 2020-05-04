@@ -16,6 +16,8 @@ namespace com.hy.synology.filemanager.core.file
         private Stream _stream;
         private BinaryReader _binaryReader;
 
+        private string _contentHash = null;
+
         private static readonly byte[] MagicBytes = Encoding.ASCII.GetBytes("__CLOUDSYNC_ENC__");
 
         public CloudSyncFile(FileItem fileItem, HandlerFactory handlerFactory)
@@ -64,23 +66,20 @@ namespace com.hy.synology.filemanager.core.file
             return FileMeta3.fromDictionary(metaDict);
         }
 
-        public byte[] GetDecryptedContent(IDecryptor decryptor)
+        public IEnumerable<byte[]> GetDecryptedContent(IDecryptor decryptor)
         {
-            List<byte[]> decryptedDataBlockList = new List<byte[]>();
             byte[] buf = null;
-
             while (true)
             {
                 if (buf != null)
                 {
-                    byte[] decryptedBlock = decryptor.DecryptBlock(buf, false);
-                    decryptedDataBlockList.Add(decryptedBlock);
+                    yield return decryptor.DecryptBlock(buf, false);
                 }
 
                 byte tag = this._binaryReader.ReadByte();
                 if (tag != 0x42)
                 {
-                    break;
+                    yield break;
                 }
 
                 IFileStreamHandler<IDictionary<string, object>> dataHandler =
@@ -90,13 +89,52 @@ namespace com.hy.synology.filemanager.core.file
                 string typeValueString = typeValue as string;
                 if (!"data".Equals(typeValueString))
                 {
-                    break;
+                    if ("metadata".Equals(typeValueString))
+                    {
+                        contentDirectory.TryGetValue("file_md5", out var md5Value);
+                        string md5String = md5Value as string;
+                        if (md5String != null)
+                        {
+                            this._contentHash = md5String;
+                        }
+                    }
+
+                    yield break;
                 }
 
                 buf = (byte[]) contentDirectory["data"];
             }
+        }
 
-            return CryptoUtils.Concat(decryptedDataBlockList.ToArray());
+        public bool VerifyContentHash(byte[] computedHash)
+        {
+            if (this._contentHash == null)
+            {
+                byte tag = this._binaryReader.ReadByte();
+                if (tag != 0x42)
+                {
+                    throw new InvalidDataException();
+                }
+
+                IFileStreamHandler<IDictionary<string, object>> dataHandler =
+                    this._handlerFactory.GetHandler<IDictionary<string, object>>(tag);
+                IDictionary<string, object> contentDirectory = dataHandler.Handle(this._binaryReader);
+                contentDirectory.TryGetValue("type", out var typeValue);
+                if ("metadata".Equals(typeValue))
+                {
+                    contentDirectory.TryGetValue("file_md5", out var md5Value);
+                    string md5String = md5Value as string;
+                    if (md5String == null)
+                    {
+                        throw new InvalidDataException();
+                    }
+
+                    this._contentHash = md5String;
+                }
+            }
+
+            byte[] hashExpected = BytesUtils.HexStringToByteArray(this._contentHash);
+            return BytesUtils.ByteArrayCompare(hashExpected, computedHash);
         }
 
         public void Dispose()

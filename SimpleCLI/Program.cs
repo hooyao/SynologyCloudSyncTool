@@ -2,13 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using com.hy.synology.filemanager.connector.filesystem;
 using com.hy.synology.filemanager.core.crypto;
+using com.hy.synology.filemanager.core.exception;
 using com.hy.synology.filemanager.core.file;
-using com.hy.synology.filemanager.core.util;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
 
 namespace com.hy.synolocgy.filemanager.simplecli
 {
@@ -20,15 +16,10 @@ namespace com.hy.synolocgy.filemanager.simplecli
         private static readonly string KeyFilePath = Path.Join(CurrentDirectory, "key.zip");
         private static readonly string OutputDirectory = Path.Join(CurrentDirectory, "output");
 
-        public static void Main(string[] args)
-        {
-            if (!args.Any()) return;
-            if (!Directory.Exists(OutputDirectory))
-            {
-                Directory.CreateDirectory(OutputDirectory);
-            }
+        private static CloudSyncFileProcessorFacade _facade;
 
-            //init beans
+        private static void InitBeans()
+        {
             HandlerFactory handlerFactory = new HandlerFactory();
             StringHandler stringHandler = new StringHandler();
             IntHandler intHandler = new IntHandler();
@@ -38,47 +29,26 @@ namespace com.hy.synolocgy.filemanager.simplecli
             handlerFactory.AddHandler(dictHandler);
             handlerFactory.AddHandler(intHandler);
             handlerFactory.AddHandler(byteSteamHandler);
+            CloudSyncKey cloudSyncKey = new CloudSyncKey(KeyFilePath);
+            IExceptionHandler exceptionHandler = new ConsoleExceptionHandler();
+            _facade = new CloudSyncFileProcessorFacade(handlerFactory, cloudSyncKey, exceptionHandler);
+        }
 
-
-            var keyReader = new CloudSyncKeyReader();
-            AsymmetricCipherKeyPair keyPair = keyReader.GetKeyPair(KeyFilePath);
-            foreach (var t in args)
+        public static void Main(string[] args)
+        {
+            //args = new[] {@"Z:\encrypted_jpg_01.jpg"};
+            if (!args.Any()) return;
+            if (!Directory.Exists(OutputDirectory))
             {
-                try
-                {
-                    FileItem fi = new FileItem(t);
-                    using (CloudSyncFile cloudSyncFile = new CloudSyncFile(fi, handlerFactory))
-                    {
-                        cloudSyncFile.InitParsing();
-                        FileMeta3 fileMeta = cloudSyncFile.GetFileMeta();
+                Directory.CreateDirectory(OutputDirectory);
+            }
 
-                        //Generate session key and make sure it matches the file
-                        byte[] sessionKeyComputed = CryptoUtils.RsaOaepDeciper(fileMeta.EncKey2, keyPair.Private);
-                        string sessionKeyHashStrComputed = CryptoUtils.SaltedMd5(
-                            fileMeta.SessionKeyHash.Substring(0, 10), sessionKeyComputed);
+            //init beans
+            InitBeans();
 
-                        if (!fileMeta.SessionKeyHash.Equals(sessionKeyHashStrComputed))
-                        {
-                            throw new InvalidDataException($"File {fi.Name}, Computed session key is incorrect.");
-                        }
-
-                        //decrypt content
-                        byte[] sessionKeyBytes = BytesUtils.HexStringToByteArray(
-                            Encoding.ASCII.GetString(sessionKeyComputed));
-                        ParametersWithIV keys =
-                            CryptoUtils.DeriveAESKeyParameters(sessionKeyBytes, null);
-                        AesCbcCryptor decryptor =
-                            new AesCbcCryptor(((KeyParameter) keys.Parameters).GetKey(), keys.GetIV());
-
-                        byte[] decryptedContent = cloudSyncFile.GetDecryptedContent(decryptor);
-                        byte[] decompressedContent = BytesUtils.UnLz4(decryptedContent);
-                        File.WriteAllBytes(Path.Join(OutputDirectory,fileMeta.FileName),decompressedContent);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Decrypt {t} failed. Error: {ex.Message}");
-                }
+            foreach (var sourceFilePath in args)
+            {
+                _facade.ProcessFile(sourceFilePath, OutputDirectory);
             }
 
             Console.WriteLine("Press any key to exit.");

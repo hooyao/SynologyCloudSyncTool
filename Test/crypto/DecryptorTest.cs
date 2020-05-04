@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using com.hy.synology.filemanager.core.crypto;
 using com.hy.synology.filemanager.core.file;
@@ -161,10 +162,7 @@ namespace com.hy.synology.filemanager.test.crypto
                 }
 
                 buf = (byte[]) dataResult["data"];
-                if (buf.Length < 8292)
-                {
-                    Console.WriteLine("last block");
-                }
+
             }
 
             byte[] decData = CryptoUtils.Concat(decryptedData.ToArray());
