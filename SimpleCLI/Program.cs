@@ -36,7 +36,7 @@ namespace com.hy.synolocgy.filemanager.simplecli
 
         public static void Main(string[] args)
         {
-            args = new[] {@"Z:\encrypted_jpg_01.jpg"};
+            args = new[] {Path.Join(@"C:\Users\yahu2\Desktop", "test.mp4")};
             if (!args.Any()) return;
             if (!Directory.Exists(OutputDirectory))
             {
@@ -52,7 +52,7 @@ namespace com.hy.synolocgy.filemanager.simplecli
             }
 
             Console.WriteLine("Press any key to exit.");
-            Console.ReadLine();
+            Console.ReadKey();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace com.hy.synology.filemanager.core.util
                 Resize(GetCapacity(data.Length + this.Capacity));
             }
 
-            int end2Tail = _array.Length - 1 - _end;
+            int end2Tail = _array.Length - _end;
             if (data.Length > end2Tail)
             {
                 Buffer.BlockCopy(data, 0,
@@ -107,7 +107,7 @@ namespace com.hy.synology.filemanager.core.util
             }
 
             byte[] result = new byte[length];
-            int start2Tail = _array.Length - 1 - _start;
+            int start2Tail = _array.Length - _start;
             if (start2Tail >= length)
             {
                 Buffer.BlockCopy(_array, _start,

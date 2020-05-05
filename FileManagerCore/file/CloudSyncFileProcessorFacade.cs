@@ -63,7 +63,8 @@ namespace com.hy.synology.filemanager.core.file
                     using (BufferedStream bs = new BufferedStream(fs))
                     using (CloudSyncPayloadStream cspls =
                         new CloudSyncPayloadStream(cloudSyncFile.GetDecryptedContent(decryptor)))
-                    using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(cspls))
+                    using (BufferedStream bslz4 = new BufferedStream(cspls,4*1024*1024))
+                    using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(bslz4))
                     using (CryptoStream md5HashStream = new CryptoStream(lz4ds, hasher, CryptoStreamMode.Read))
                     {
                         md5HashStream.CopyTo(bs);
