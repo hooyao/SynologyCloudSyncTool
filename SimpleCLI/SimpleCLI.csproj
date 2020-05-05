@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.52" />
+    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.52"/>
     <Import Project="..\deepclean.target"/>
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -10,11 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Connector\Connector.csproj" />
-      <ProjectReference Include="..\FileManagerCore\FileManagerCore.csproj" />
+        <ProjectReference Include="..\Connector\Connector.csproj"/>
+        <ProjectReference Include="..\FileManagerCore\FileManagerCore.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Costura.Fody" />
+        <PackageReference Include="Costura.Fody"/>
     </ItemGroup>
 </Project>
