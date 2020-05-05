@@ -36,7 +36,7 @@ namespace com.hy.synolocgy.filemanager.simplecli
 
         public static void Main(string[] args)
         {
-            //args = new[] {@"Z:\encrypted_jpg_01.jpg"};
+            args = new[] {@"Z:\encrypted_jpg_01.jpg"};
             if (!args.Any()) return;
             if (!Directory.Exists(OutputDirectory))
             {
