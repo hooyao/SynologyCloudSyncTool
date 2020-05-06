@@ -55,7 +55,7 @@ namespace com.hy.synology.filemanager.core.file
 
         public override void Flush()
         {
-            //Do nothing
+            throw new NotSupportedException();
         }
 
         public override long Seek(long offset, SeekOrigin origin)

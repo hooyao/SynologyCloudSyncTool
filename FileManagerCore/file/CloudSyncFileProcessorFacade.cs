@@ -59,15 +59,14 @@ namespace com.hy.synology.filemanager.core.file
                         respectFileNameInMeta ? fileMeta.FileName : Path.GetFileName(sourcePath));
 
                     var hasher = MD5.Create();
-                    using (FileStream fs = File.OpenWrite(destPath))
-                    using (BufferedStream bs = new BufferedStream(fs))
                     using (CloudSyncPayloadStream cspls =
                         new CloudSyncPayloadStream(cloudSyncFile.GetDecryptedContent(decryptor)))
-                    using (BufferedStream bslz4 = new BufferedStream(cspls,4*1024*1024))
-                    using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(bslz4))
+                    using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(cspls))
                     using (CryptoStream md5HashStream = new CryptoStream(lz4ds, hasher, CryptoStreamMode.Read))
+                    using (FileStream writeFs = File.OpenWrite(destPath))
+                    using (BufferedStream writeBs = new BufferedStream(writeFs))
                     {
-                        md5HashStream.CopyTo(bs);
+                        md5HashStream.CopyTo(writeBs);
                     }
 
                     if (!cloudSyncFile.VerifyContentHash(hasher.Hash))

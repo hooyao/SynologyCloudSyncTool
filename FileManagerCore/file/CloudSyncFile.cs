@@ -1,10 +1,10 @@
-﻿using System;
+﻿using com.hy.synology.filemanager.connector.filesystem;
+using com.hy.synology.filemanager.core.crypto;
+using com.hy.synology.filemanager.core.util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using com.hy.synology.filemanager.connector.filesystem;
-using com.hy.synology.filemanager.core.crypto;
-using com.hy.synology.filemanager.core.util;
 
 namespace com.hy.synology.filemanager.core.file
 {
@@ -30,7 +30,7 @@ namespace com.hy.synology.filemanager.core.file
         {
             //Read "__CLOUDSYNC_ENC__" 
             this._stream = this._fileItem.GetStream();
-            this._binaryReader = new BinaryReader(new BufferedStream(this._stream, 4 * 1024 * 1024));
+            this._binaryReader = new BinaryReader(new BufferedStream(this._stream, 2 * 1024 * 1024));
             byte[] magicBytesRead = this._binaryReader.ReadBytes(MagicBytes.Length);
             if (!BytesUtils.ByteArrayCompare(MagicBytes, magicBytesRead))
             {
@@ -102,7 +102,7 @@ namespace com.hy.synology.filemanager.core.file
                     yield break;
                 }
 
-                buf = (byte[]) contentDirectory["data"];
+                buf = (byte[])contentDirectory["data"];
             }
         }
 
