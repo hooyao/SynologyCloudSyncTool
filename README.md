@@ -13,8 +13,8 @@ the prerequisite of .Net installation.
 3. Drag the encrypted files and drop them on **SimpleCLI-x86.exe**
 4. **SimpleCLI-x86.exe** will create a directory *output* in the same directory as 
 itself and write the decrypted files into it.
-5. Known limitation: this application is a POC, it uses an inefficient buffer to copy between streams,
-it's slow, < 10M/s on Intel 8700K. 
+5. Known limitation: this application is a POC, the unit test coverage is literally zero.
+But it should be safe to use. The file is hashed to compare with the md5 stored in the meta.
 
 # Special Thanks
 This project is a remake of 
@@ -25,8 +25,9 @@ who is the guy who did the reverse engineering.
 # Planned development 
 * <del>Implement file hash
 * <del>Apply stream to read and process file data
-* Implement a ringbuffer to copy between streams 
-* Apply async for io
+* <del>Implement a ringbuffer to copy between streams 
+* Apply async for io, the decrypting speed can reach 400MB/s, I have no idea if this async
+  optimization is necessary.
 * Implement Azure source connector
 * Implement S3 source connector
 * Implement WPF UX
