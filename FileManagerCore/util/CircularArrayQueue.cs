@@ -70,34 +70,46 @@ namespace com.hy.synology.filemanager.core.util
 
         public void EnQueue(byte[] data)
         {
-            if (data.Length > this.Capacity - this.Size)
+            EnQueue(data, 0, data.Length);
+        }
+
+        public void EnQueue(byte[] source, int offset, int length)
+        {
+            if (length > this.Capacity - this.Size)
             {
-                Resize(GetCapacity(data.Length + this.Capacity));
+                Resize(GetCapacity(length + this.Capacity));
             }
 
             int end2Tail = _array.Length - _end;
-            if (data.Length > end2Tail)
+            if (length > end2Tail)
             {
-                Buffer.BlockCopy(data, 0,
+                Buffer.BlockCopy(source, offset,
                     _array, _end,
                     end2Tail);
-                Buffer.BlockCopy(data, end2Tail,
+                Buffer.BlockCopy(source, offset + end2Tail,
                     _array, 0,
-                    data.Length - end2Tail);
+                    length - end2Tail);
             }
             else
             {
-                Buffer.BlockCopy(data, 0, _array, _end, data.Length);
+                Buffer.BlockCopy(source, offset, _array, _end, length);
             }
 
-            _end = (_end + data.Length) % _array.Length;
+            _end = (_end + length) % _array.Length;
         }
 
         public byte[] DeQueue(int length)
         {
+            byte[] buf = new byte[length];
+            DeQueue(buf, 0, length);
+            return buf;
+        }
+
+        public void DeQueue(byte[] dest, int offset, int length)
+        {
             if (length <= 0)
             {
-                return new byte[0];
+                return;
             }
 
             if (length > this.Size)
@@ -106,26 +118,24 @@ namespace com.hy.synology.filemanager.core.util
                 throw new InvalidDataException();
             }
 
-            byte[] result = new byte[length];
             int start2Tail = _array.Length - _start;
             if (start2Tail >= length)
             {
                 Buffer.BlockCopy(_array, _start,
-                    result, 0,
+                    dest, offset,
                     length);
             }
             else
             {
                 Buffer.BlockCopy(_array, _start,
-                    result, 0,
+                    dest, offset,
                     start2Tail);
                 Buffer.BlockCopy(_array, 0,
-                    result, start2Tail,
+                    dest, offset + start2Tail,
                     length - start2Tail);
             }
 
             _start = (_start + length) % _array.Length;
-            return result;
         }
     }
 }

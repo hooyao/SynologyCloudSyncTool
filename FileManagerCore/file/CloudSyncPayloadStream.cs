@@ -43,8 +43,7 @@ namespace com.hy.synology.filemanager.core.file
             }
 
             int readSize = _buf.Size <= count ? _buf.Size : count;
-            byte[] bytesFromBuf = _buf.DeQueue(readSize);
-            Buffer.BlockCopy(bytesFromBuf, 0, buffer, offset, readSize);
+            _buf.DeQueue(buffer, offset, readSize);
             return readSize;
         }
 

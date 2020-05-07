@@ -67,14 +67,15 @@ namespace com.hy.synology.filemanager.core.file
             return FileMeta3.fromDictionary(metaDict);
         }
 
-        public IEnumerable<byte[]> GetDecryptedContent(IDecryptor decryptor)
+        public IEnumerable<byte[]> GetDataBlocks(IDecryptor decryptor)
         {
             byte[] buf = null;
             while (true)
             {
                 if (buf != null)
                 {
-                    yield return decryptor.DecryptBlock(buf, false);
+                    //yield return decryptor.DecryptBlock(buf, false);
+                    yield return buf;
                 }
 
                 byte tag = this._binaryReader.ReadByte();
@@ -103,7 +104,7 @@ namespace com.hy.synology.filemanager.core.file
                     yield break;
                 }
 
-                buf = (byte[])contentDirectory["data"];
+                buf = (byte[]) contentDirectory["data"];
             }
         }
 

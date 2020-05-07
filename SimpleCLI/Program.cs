@@ -36,7 +36,7 @@ namespace com.hy.synolocgy.filemanager.simplecli
 
         public static void Main(string[] args)
         {
-            args = new[] { Path.Join(@"C:\Users\yahu2\Desktop", "test.mp4") };
+            //args = new[] { Path.Join(@"E:\", "test.mp4") };
             if (!args.Any()) return;
             if (!Directory.Exists(OutputDirectory))
             {
