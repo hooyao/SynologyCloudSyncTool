@@ -4,7 +4,7 @@ using System.IO;
 
 namespace com.hy.synology.filemanager.core.crypto
 {
-    public class OrderedDictHandler: IFileStreamHandler<IDictionary<string,Object>>
+    public class OrderedDictHandler : IFileStreamHandler<IDictionary<string, object>>
     {
         private readonly HandlerFactory _factory;
         public OrderedDictHandler(HandlerFactory factory)
@@ -12,12 +12,12 @@ namespace com.hy.synology.filemanager.core.crypto
             this._factory = factory;
         }
 
-        public Type ReturnType => typeof(IDictionary<string,Object>);
+        public Type ReturnType => typeof(IDictionary<string, object>);
         public byte SupportedTag => 0x42;
 
-        public IDictionary<string,Object> Handle(BinaryReader br)
+        public IDictionary<string, object> Handle(BinaryReader br)
         {
-            IDictionary<string,Object> returnDict = new Dictionary<string, Object>();
+            IDictionary<string, object> returnDict = new Dictionary<string, object>();
             //read key, 0x10 expected
             Boolean hasNext = true;
             while (hasNext)
@@ -30,7 +30,7 @@ namespace com.hy.synology.filemanager.core.crypto
                         string key = stringHandler.Handle(br);
                         //read value
                         byte valueTag = br.ReadByte();
-                        IFileStreamHandler<Object> valueHandler = this._factory.GetHandler<Object>(valueTag);
+                        IFileStreamHandler<object> valueHandler = this._factory.GetHandler<object>(valueTag);
                         if (valueHandler == null)
                         {
                             throw new InvalidDataException();

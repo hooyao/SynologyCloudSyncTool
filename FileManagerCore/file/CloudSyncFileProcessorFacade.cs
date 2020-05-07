@@ -53,25 +53,26 @@ namespace com.hy.synology.filemanager.core.file
                     ParametersWithIV keys =
                         CryptoUtils.DeriveAESKeyParameters(sessionKeyBytes, null);
                     AesCbcCryptor decryptor =
-                        new AesCbcCryptor(((KeyParameter) keys.Parameters).GetKey(), keys.GetIV());
+                        new AesCbcCryptor(((KeyParameter)keys.Parameters).GetKey(), keys.GetIV());
 
                     destPath = Path.Join(destDir,
                         respectFileNameInMeta ? fileMeta.FileName : Path.GetFileName(sourcePath));
 
-                    var hasher = MD5.Create();
-                    using (CloudSyncPayloadStream cspls =
-                        new CloudSyncPayloadStream(cloudSyncFile.GetDecryptedContent(decryptor)))
-                    using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(cspls))
-                    using (CryptoStream md5HashStream = new CryptoStream(lz4ds, hasher, CryptoStreamMode.Read))
-                    using (FileStream writeFs = File.OpenWrite(destPath))
-                    using (BufferedStream writeBs = new BufferedStream(writeFs))
+                    using (var hasher = MD5.Create())
                     {
-                        md5HashStream.CopyTo(writeBs);
-                    }
+                        using (CloudSyncPayloadStream cspls =
+                            new CloudSyncPayloadStream(cloudSyncFile.GetDecryptedContent(decryptor)))
+                        using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(cspls))
+                        using (CryptoStream md5HashStream = new CryptoStream(lz4ds, hasher, CryptoStreamMode.Read))
+                        using (FileStream writeFs = new FileStream(destPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite, 4 * 1024 * 1024))
+                        {
+                            md5HashStream.CopyTo(writeFs, 1024 * 1024);
+                        }
 
-                    if (!cloudSyncFile.VerifyContentHash(hasher.Hash))
-                    {
-                        throw new InvalidDataException();
+                        if (!cloudSyncFile.VerifyContentHash(hasher.Hash))
+                        {
+                            throw new InvalidDataException();
+                        }
                     }
 
                     return true;

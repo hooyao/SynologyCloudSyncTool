@@ -30,7 +30,8 @@ namespace com.hy.synology.filemanager.core.file
         {
             //Read "__CLOUDSYNC_ENC__" 
             this._stream = this._fileItem.GetStream();
-            this._binaryReader = new BinaryReader(new BufferedStream(this._stream, 2 * 1024 * 1024));
+            this._binaryReader = new BinaryReader(this._stream);
+
             byte[] magicBytesRead = this._binaryReader.ReadBytes(MagicBytes.Length);
             if (!BytesUtils.ByteArrayCompare(MagicBytes, magicBytesRead))
             {

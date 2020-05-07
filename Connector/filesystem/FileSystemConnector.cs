@@ -17,7 +17,7 @@ namespace com.hy.synology.filemanager.connector.filesystem
 
         public Stream GetStream()
         {
-            return new FileStream(this._filePath, FileMode.Open);
+            return new FileStream(this._filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4 * 1024 * 1024);
         }
     }
 
