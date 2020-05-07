@@ -1,10 +1,10 @@
-﻿using System;
+﻿using com.hy.synology.filemanager.connector.filesystem;
+using com.hy.synology.filemanager.core.crypto;
+using com.hy.synology.filemanager.core.util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using com.hy.synology.filemanager.connector.filesystem;
-using com.hy.synology.filemanager.core.crypto;
-using com.hy.synology.filemanager.core.util;
 
 namespace com.hy.synology.filemanager.core.file
 {
@@ -31,6 +31,7 @@ namespace com.hy.synology.filemanager.core.file
             //Read "__CLOUDSYNC_ENC__" 
             this._stream = this._fileItem.GetStream();
             this._binaryReader = new BinaryReader(this._stream);
+
             byte[] magicBytesRead = this._binaryReader.ReadBytes(MagicBytes.Length);
             if (!BytesUtils.ByteArrayCompare(MagicBytes, magicBytesRead))
             {
@@ -66,14 +67,15 @@ namespace com.hy.synology.filemanager.core.file
             return FileMeta3.fromDictionary(metaDict);
         }
 
-        public IEnumerable<byte[]> GetDecryptedContent(IDecryptor decryptor)
+        public IEnumerable<byte[]> GetDataBlocks(IDecryptor decryptor)
         {
             byte[] buf = null;
             while (true)
             {
                 if (buf != null)
                 {
-                    yield return decryptor.DecryptBlock(buf, false);
+                    //yield return decryptor.DecryptBlock(buf, false);
+                    yield return buf;
                 }
 
                 byte tag = this._binaryReader.ReadByte();

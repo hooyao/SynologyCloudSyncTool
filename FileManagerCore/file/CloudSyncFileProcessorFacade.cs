@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -58,20 +59,51 @@ namespace com.hy.synology.filemanager.core.file
                     destPath = Path.Join(destDir,
                         respectFileNameInMeta ? fileMeta.FileName : Path.GetFileName(sourcePath));
 
-                    var hasher = MD5.Create();
-                    using (FileStream fs = File.OpenWrite(destPath))
-                    using (BufferedStream bs = new BufferedStream(fs))
-                    using (CloudSyncPayloadStream cspls =
-                        new CloudSyncPayloadStream(cloudSyncFile.GetDecryptedContent(decryptor)))
-                    using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(cspls))
-                    using (CryptoStream md5HashStream = new CryptoStream(lz4ds, hasher, CryptoStreamMode.Read))
+                    using (var hasher = MD5.Create())
                     {
-                        md5HashStream.CopyTo(bs);
-                    }
+                        using (AesCryptoServiceProvider aes = new AesCryptoServiceProvider())
+                        {
+                            aes.Mode = CipherMode.CBC;
+                            aes.Key = ((KeyParameter) keys.Parameters).GetKey();
+                            aes.IV = keys.GetIV();
+                            //Stopwatch stopwatch =  new Stopwatch();
+                            //stopwatch.Start();
+                            //byte[] buffer = new byte[1024 * 1024];
+                            long bytesRead = 0;
+                            ICryptoTransform decoder = aes.CreateDecryptor();
+                            using (CloudSyncPayloadStream cspls =
+                                new CloudSyncPayloadStream(cloudSyncFile.GetDataBlocks(decryptor)))
+                            using (CryptoStream aesStream = new CryptoStream(cspls, decoder, CryptoStreamMode.Read))
+                            using (LZ4DecoderStream lz4ds = LZ4Stream.Decode(aesStream))
+                            using (FileStream writeFs = new FileStream(destPath, FileMode.OpenOrCreate,
+                                FileAccess.ReadWrite, FileShare.ReadWrite, 1024 * 1024))
+                            using (CryptoStream md5HashStream =
+                                new CryptoStream(writeFs, hasher, CryptoStreamMode.Write))
+                            {
+                                lz4ds.CopyTo(md5HashStream, 1024 * 1024);
+                                // int read;
+                                // while ((read = md5HashStream.Read(buffer, 0, buffer.Length)) > 0)
+                                // {
+                                //     //do nothing
+                                //     bytesRead += read;
+                                //     long elapsed = stopwatch.ElapsedMilliseconds;
+                                //     if (elapsed > 1000)
+                                //     {
+                                //         double readInM = (double) bytesRead / 1024.0 / 1024.0/elapsed*1000.0;
+                                //         bytesRead = 0;
+                                //         Console.WriteLine($"Speed:{readInM} M/s");
+                                //         stopwatch.Reset();
+                                //         stopwatch.Start();
+                                //     }
+                                // }
+                            }
 
-                    if (!cloudSyncFile.VerifyContentHash(hasher.Hash))
-                    {
-                        throw new InvalidDataException();
+                            //stopwatch.Stop();
+                            if (!cloudSyncFile.VerifyContentHash(hasher.Hash))
+                            {
+                                throw new InvalidDataException("File Md5 doesn't match.");
+                            }
+                        }
                     }
 
                     return true;

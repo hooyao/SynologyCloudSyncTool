@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.52"/>
-    <Import Project="..\deepclean.target"/>
+    <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.52" />
+    <Import Project="..\deepclean.target" />
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
 
@@ -12,11 +12,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BouncyCastle.NetCore"/>
-        <PackageReference Include="K4os.Compression.LZ4.Streams"/>
-        <PackageReference Include="nunit"/>
-        <PackageReference Include="NUnit3TestAdapter"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="BouncyCastle.NetCore" />
+        <PackageReference Include="K4os.Compression.LZ4.Streams" />
+        <PackageReference Include="nunit" />
+        <PackageReference Include="NUnit3TestAdapter" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
     </ItemGroup>
 
     <ItemGroup>
@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\FileManagerCore\FileManagerCore.csproj"/>
+        <ProjectReference Include="..\FileManagerCore\FileManagerCore.csproj" />
     </ItemGroup>
 
 </Project>
