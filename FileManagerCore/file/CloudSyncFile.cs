@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace com.hy.synology.filemanager.core.file
 {
@@ -14,7 +15,7 @@ namespace com.hy.synology.filemanager.core.file
         private HandlerFactory _handlerFactory;
 
         private Stream _stream;
-        private BinaryReader _binaryReader;
+        private AsyncBinaryReader _binaryReader;
 
         private string _contentHash = null;
 
@@ -26,20 +27,20 @@ namespace com.hy.synology.filemanager.core.file
             _handlerFactory = handlerFactory;
         }
 
-        public void InitParsing()
+        public async Task InitParsing()
         {
             //Read "__CLOUDSYNC_ENC__" 
             this._stream = this._fileItem.GetStream();
-            this._binaryReader = new BinaryReader(this._stream);
+            this._binaryReader = new AsyncBinaryReader(this._stream);
 
-            byte[] magicBytesRead = this._binaryReader.ReadBytes(MagicBytes.Length);
+            byte[] magicBytesRead = await this._binaryReader.ReadBytesAsync(MagicBytes.Length);
             if (!BytesUtils.ByteArrayCompare(MagicBytes, magicBytesRead))
             {
                 throw new InvalidDataException($"File {this._fileItem.Name} is not Synology Cloud Sync file.");
             }
 
             //check "__CLOUDSYNC_ENC__" Md5 hash 
-            byte[] magicHashRead = this._binaryReader.ReadBytes(32);
+            byte[] magicHashRead = await this._binaryReader.ReadBytesAsync(32);
             byte[] magicHashComputed =
                 Encoding.ASCII.GetBytes(BytesUtils.ByteArrayToLowerHexString(CryptoUtils.Md5(MagicBytes)));
             if (!BytesUtils.ByteArrayCompare(magicHashRead, magicHashComputed))
@@ -48,9 +49,9 @@ namespace com.hy.synology.filemanager.core.file
             }
         }
 
-        public FileMeta3 GetFileMeta()
+        public async Task<FileMeta3> GetFileMeta()
         {
-            byte metaTag = this._binaryReader.ReadByte();
+            byte metaTag = await _binaryReader.ReadByteAsync();
             if (metaTag != 0x42)
             {
                 throw new InvalidDataException($"File {this._fileItem.Name} fails to extract meta");
@@ -67,7 +68,7 @@ namespace com.hy.synology.filemanager.core.file
             return FileMeta3.fromDictionary(metaDict);
         }
 
-        public IEnumerable<byte[]> GetDataBlocks(IDecryptor decryptor)
+        public async IAsyncEnumerable<byte[]> GetDataBlocks(IDecryptor decryptor)
         {
             byte[] buf = null;
             while (true)
@@ -78,7 +79,7 @@ namespace com.hy.synology.filemanager.core.file
                     yield return buf;
                 }
 
-                byte tag = this._binaryReader.ReadByte();
+                byte tag = await this._binaryReader.ReadByteAsync();
                 if (tag != 0x42)
                 {
                     yield break;
@@ -108,11 +109,11 @@ namespace com.hy.synology.filemanager.core.file
             }
         }
 
-        public bool VerifyContentHash(byte[] computedHash)
+        public async Task<bool> VerifyContentHash(byte[] computedHash)
         {
             if (this._contentHash == null)
             {
-                byte tag = this._binaryReader.ReadByte();
+                byte tag = await this._binaryReader.ReadByteAsync();
                 if (tag != 0x42)
                 {
                     throw new InvalidDataException();

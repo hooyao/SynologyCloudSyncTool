@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using com.hy.synology.filemanager.connector.filesystem;
 using com.hy.synology.filemanager.core.crypto;
 using com.hy.synology.filemanager.core.exception;
@@ -26,7 +27,7 @@ namespace com.hy.synology.filemanager.core.file
             _exceptionHandler = exceptionHandler;
         }
 
-        public bool ProcessFile(string sourcePath, string destDir, bool respectFileNameInMeta = true)
+        public async Task<bool> ProcessFile(string sourcePath, string destDir, bool respectFileNameInMeta = true)
         {
             string destPath = null;
             try
@@ -35,7 +36,7 @@ namespace com.hy.synology.filemanager.core.file
                 using (CloudSyncFile cloudSyncFile = new CloudSyncFile(fi, _handlerFactory))
                 {
                     cloudSyncFile.InitParsing();
-                    FileMeta3 fileMeta = cloudSyncFile.GetFileMeta();
+                    FileMeta3 fileMeta = await cloudSyncFile.GetFileMeta();
 
                     //Generate session key and make sure it matches the file
                     byte[] sessionKeyComputed =
@@ -80,7 +81,7 @@ namespace com.hy.synology.filemanager.core.file
                             using (CryptoStream md5HashStream =
                                 new CryptoStream(writeFs, hasher, CryptoStreamMode.Write))
                             {
-                                lz4ds.CopyTo(md5HashStream, 1024 * 1024);
+                                await lz4ds.CopyToAsync(md5HashStream, 1024 * 1024);
                                 // int read;
                                 // while ((read = md5HashStream.Read(buffer, 0, buffer.Length)) > 0)
                                 // {
@@ -99,7 +100,7 @@ namespace com.hy.synology.filemanager.core.file
                             }
 
                             //stopwatch.Stop();
-                            if (!cloudSyncFile.VerifyContentHash(hasher.Hash))
+                            if (!await cloudSyncFile.VerifyContentHash(hasher.Hash))
                             {
                                 throw new InvalidDataException("File Md5 doesn't match.");
                             }

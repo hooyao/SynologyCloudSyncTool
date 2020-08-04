@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using com.hy.synology.filemanager.core.crypto;
 using com.hy.synology.filemanager.core.exception;
 using com.hy.synology.filemanager.core.file;
@@ -34,9 +35,13 @@ namespace com.hy.synolocgy.filemanager.simplecli
             _facade = new CloudSyncFileProcessorFacade(handlerFactory, cloudSyncKey, exceptionHandler);
         }
 
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
-            //args = new[] { Path.Join(@"E:\", "test.mp4") };
+            Process Proc = Process.GetCurrentProcess();
+            long AffinityMask = (long)Proc.ProcessorAffinity;
+            //AffinityMask &= 0x0001; // use only any of the first 4 available processors
+            //Proc.ProcessorAffinity = (IntPtr)AffinityMask;
+            args = new[] { Path.Join(@"C:\Users\yahu2\Desktop", "test.mp4") };
             if (!args.Any()) return;
             if (!Directory.Exists(OutputDirectory))
             {
