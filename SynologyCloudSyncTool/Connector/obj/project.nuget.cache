@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "dgSpecHash": "nxvvOzzmv1YwpSSn5bNRYhCndqx1KEcj9qrPediU0GPuvOIQXQti5O+YPPsCzD1lnvf0RHQLLzu6OgkpQG6hIw==",
+  "success": true,
+  "projectFilePath": "D:\\MyProjects\\SynologyCloudSyncTool\\SynologyCloudSyncTool\\Connector\\Connector.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\yahu2\\.nuget\\packages\\azure.core\\1.8.1\\azure.core.1.8.1.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\azure.storage.blobs\\12.8.0\\azure.storage.blobs.12.8.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\azure.storage.common\\12.7.0\\azure.storage.common.12.7.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.0.0\\microsoft.bcl.asyncinterfaces.1.0.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\system.buffers\\4.5.0\\system.buffers.4.5.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.6.0\\system.diagnostics.diagnosticsource.4.6.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\system.text.json\\4.6.0\\system.text.json.4.6.0.nupkg.sha512",
+    "C:\\Users\\yahu2\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.2\\system.threading.tasks.extensions.4.5.2.nupkg.sha512"
+  ],
+  "logs": []
+}

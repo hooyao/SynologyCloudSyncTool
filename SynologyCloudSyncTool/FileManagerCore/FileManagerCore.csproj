@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>9</LangVersion>
+        <RootNamespace>com.hy.synology.filemanager.core</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BouncyCastle.NetCore" Version="1.8.8" />
+        <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Connector\Connector.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{BE9C8373-768D-4793-BAFA-0EC7FFA1B797}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connector", "Connector\Connector.csproj", "{BAFBE2C7-C5AB-42B8-8233-67EA712BD45B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManagerCore", "FileManagerCore\FileManagerCore.csproj", "{634169CE-2019-4F59-9124-5C59FCC50450}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE9C8373-768D-4793-BAFA-0EC7FFA1B797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE9C8373-768D-4793-BAFA-0EC7FFA1B797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE9C8373-768D-4793-BAFA-0EC7FFA1B797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE9C8373-768D-4793-BAFA-0EC7FFA1B797}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAFBE2C7-C5AB-42B8-8233-67EA712BD45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAFBE2C7-C5AB-42B8-8233-67EA712BD45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAFBE2C7-C5AB-42B8-8233-67EA712BD45B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAFBE2C7-C5AB-42B8-8233-67EA712BD45B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{634169CE-2019-4F59-9124-5C59FCC50450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{634169CE-2019-4F59-9124-5C59FCC50450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{634169CE-2019-4F59-9124-5C59FCC50450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{634169CE-2019-4F59-9124-5C59FCC50450}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
